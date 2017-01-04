@@ -5,14 +5,19 @@
  */
 package controlador;
 
-import com.jfoenix.controls.JFXButton;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import util.Notificaciones;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import notificaciones.NotificacionMsj;
 
 /**
  * FXML Controller class
@@ -20,33 +25,48 @@ import util.Notificaciones;
  * @author FLAVIO
  */
 public class FXML_notificacionController implements Initializable {
-    Notificaciones notificaciones;
-    
     @FXML
-    private Label lbl_titulo;
-    @FXML
-    private Label lbl_mensaje;
-    @FXML
-    private HBox hbox_root;
-    @FXML
-    private JFXButton btn_cerrar;
+    private VBox vbox_mensajes;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        System.out.println("inicializa");
     }    
     
-    public void setObservableList(Notificaciones notificaciones){
-        this.notificaciones = notificaciones;
+    public void addTitulo(String titulo){
+        Label lbl_titulo = new Label(titulo);
+        lbl_titulo.getStyleClass().add("title");
+        vbox_mensajes.getChildren().add(lbl_titulo);
     }
     
-    public void setTitulo(String titulo){
-        lbl_titulo.setText(titulo);
+    public void addMsj(NotificacionMsj msj){
+        msj.setVisto(true);
+        
+        HBox hbox = new HBox();
+        hbox.getStyleClass().add("contenedor");
+        if (msj.getOrigen() != null) {
+            Label lbl_remitente = new Label(msj.getOrigen());
+            lbl_remitente.getStyleClass().add("remitente");
+            hbox.getChildren().add(lbl_remitente);
+        }
+        Label lbl_msj = new Label(msj.getMsj());
+        lbl_msj.getStyleClass().add("responde");
+        hbox.getChildren().add(lbl_msj);
+        
+        vbox_mensajes.getChildren().add(hbox);
     }
-    public void setMensaje(String mensaje){
-        lbl_mensaje.setText(mensaje);
+    
+    @FXML
+    private void paginaOI(MouseEvent event) {
+        try {
+            Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + "www.oi.com.ar");
+        } catch (IOException ex) {
+            System.out.println("Error al abrir pagina de Organización Informática");
+            Logger.getLogger(FXML_notificacionController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }

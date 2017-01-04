@@ -2,36 +2,36 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.VBox?>
 
-<HBox fx:id="hbox_root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="120.0" prefWidth="400.0" styleClass="mainFxmlClass" stylesheets="@../css/fxml_notificacion.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controlador.FXML_notificacionController">
+<HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="400.0" styleClass="mainFxmlClass" stylesheets="@../css/fxml_notificacion.css" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controlador.FXML_notificacionController">
    <children>
-      <Pane prefHeight="400.0" prefWidth="27.0" style="-fx-background-color: #03A9F4;" />
-      <StackPane maxHeight="200.0" maxWidth="375.0" HBox.hgrow="ALWAYS">
+      <Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="25.0" />
+      <VBox HBox.hgrow="ALWAYS">
          <children>
-            <Label fx:id="lbl_titulo" prefWidth="340.0" text="CORREO INTERNO - FLAVIO NICOLAS ROSSI" StackPane.alignment="TOP_LEFT">
-               <font>
-                  <Font name="System Bold" size="16.0" />
-               </font>
-            </Label>
-            <JFXButton fx:id="btn_cerrar" buttonType="RAISED" prefHeight="19.0" prefWidth="19.0" text="x" textFill="#03a9f4" StackPane.alignment="TOP_RIGHT">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-            </JFXButton>
-            <Label fx:id="lbl_mensaje" prefHeight="85.0" prefWidth="364.0" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean consectetur metus eu laoreet volutpat. Donec lobortis vitae sem ut fermentum. Pellentesque quis sapien in dolor maximus consectetur. Phasellus sed eros in libero hendrerit facilisis. Nunc et velit ut felis mattis convallis vitae facilisis massa. Aliquam luctus nibh velit, ullamcorper consequat nisl congue id. Nullam ac ante maximus, imperdiet lacus at, tincidunt turpis. Curabitur bibendum et neque at dignissim. Etiam lobortis rhoncus neque vitae placerat. In in lobortis augue. Maecenas eleifend enim hendrerit, vehicula lacus eu, tristique risus." wrapText="true">
-               <StackPane.margin>
-                  <Insets top="25.0" />
-               </StackPane.margin>
-            </Label>
+            <HBox>
+               <children>
+                  <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseClicked="#paginaOI" opacity="0.65" styleClass="paginaOI" text="www.oi.com.ar" wrapText="true" HBox.hgrow="ALWAYS">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Label>
+                  <JFXButton fx:id="btn_cerrar" text="x" />
+               </children>
+            </HBox>
+            <VBox fx:id="vbox_mensajes" maxHeight="1.7976931348623157E308" spacing="3.0" VBox.vgrow="ALWAYS" />
          </children>
          <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            <Insets left="5.0" right="5.0" />
          </padding>
-      </StackPane>
+      </VBox>
    </children>
+   <effect>
+      <DropShadow color="#0000000d" />
+   </effect>
 </HBox>

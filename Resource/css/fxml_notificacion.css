@@ -11,6 +11,11 @@
 }
 .remitente{
     -fx-font-weight: bold;
+    -fx-max-height: 60;
+    -fx-max-width: 100;
+    -fx-min-width: 100;
+    -fx-text-overrun: ellipsis;
+    -fx-wrap-text: true;
 }
 
 JFXButton{
@@ -19,6 +24,24 @@ JFXButton{
 Label{
     -fx-text-fill: #ffffff;
 }
-Text{
-    -fx-fill: #ffffff;
+
+.responde{
+    -fx-max-height: 60;
+    -fx-max-width: Infinity;
+    -fx-text-overrun: ellipsis;
+    -fx-wrap-text: true;
+}
+
+.paginaOI:hover{
+    -fx-text-fill: #FFC107;
+    -fx-cursor: hand;
+}
+
+Pane{
+    -fx-background-color: #FFC107;
+}
+
+.contenedor:hover{
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-cursor: hand;
 }

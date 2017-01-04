@@ -18,7 +18,7 @@ import javafx.concurrent.Task;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import util.Notificaciones;
+import notificaciones.Notificaciones;
 import util.ServidorRespuestas;
 import util.Status;
 

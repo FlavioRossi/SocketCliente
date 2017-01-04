@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import modelo.Cliente;
+import notificaciones.Notificacion;
+import notificaciones.NotificacionMsj;
 import org.json.simple.JSONObject;
 
 /**
@@ -58,25 +60,48 @@ public class ServidorRespuestas {
             case 2:
                 //NOTIFICACIONES
                 for (Object key : resul.keySet()) {
-                    String modulo = key.toString();
+                    int modulo = Integer.parseInt(key.toString());
                     switch(modulo){
-                        case "1":
-                            JSONObject correoInterno = (JSONObject) resul.get(modulo);
-                            for (int i = 0; i < correoInterno.size(); i++) {
-                                JSONObject msj = (JSONObject) correoInterno.get(i);
-                                cliente.getNotificaciones().addMsj
+                        case 1:
+                            Notificacion notificacion = new Notificacion(1, "CORREO INTERNO");
+                            
+                            JSONObject correoInterno = (JSONObject) resul.get("" + modulo);
+                            for (int i = 1; i < correoInterno.size() + 1; i++) {
+                                JSONObject msjs = (JSONObject) correoInterno.get("" + i);
                                 
+                                String origen = msjs.get("nombreD").toString();
+                                String mensaje = msjs.get("mensaje").toString();
+                                
+                                NotificacionMsj msj;
+                                if (origen == null) {
+                                    msj = new NotificacionMsj(mensaje);
+                                }else{
+                                    msj = new NotificacionMsj(mensaje, origen);
+                                }
+                                msj.setVisto(false);
+                                notificacion.addMensaje(msj);
                             }
+                            {
+                                try {
+                                    cliente.getNotificaciones().addNotificacion(notificacion);
+                                } catch (IOException ex) {
+                                    System.out.println("Error al crear notificación");
+                                    Logger.getLogger(ServidorRespuestas.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                            break;
                     }
                 }
-                
-                String titulo = resul.get("nombreD").toString();
-                String mensaje = resul.get("mensaje").toString();
-                try {
-                    cliente.getNotificaciones().addNotificacion("CORREO INTERNO - " + titulo, mensaje, cliente.getUsuario().isNotificaciones());
-                } catch (IOException ex) {
-                    Logger.getLogger(ServidorRespuestas.class.getName()).log(Level.SEVERE, null, ex);
+                {
+                    try {
+                        cliente.getNotificaciones().showNotificacion();
+                    } catch (IOException ex) {
+                        System.out.println("Error al mostrar notificaciones");
+                        Logger.getLogger(ServidorRespuestas.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
+            case 3:
+                // ALGO MAS
                 break;
         }
     }
