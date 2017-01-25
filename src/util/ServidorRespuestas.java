@@ -5,11 +5,10 @@
  */
 package util;
 
-import java.io.IOException;
+import conexion.Cliente;
 import java.time.LocalDateTime;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import modelo.Cliente;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import notificaciones.Notificacion;
 import notificaciones.NotificacionMsj;
 import org.json.simple.JSONObject;
@@ -20,23 +19,14 @@ import org.json.simple.JSONObject;
  */
 public class ServidorRespuestas {
     /**
-     * Instancia del cliente
-     */
-    private final Cliente cliente;
-
-    
-    
-    public ServidorRespuestas(Cliente cliente) {
-        this.cliente = cliente;
-    }
-
-    /**
      * Recibe un objeto JSON con la respuesta del servidor
      * Formato: "parametro", "resul"
      * Devuelve: un Object el cual debe ser casteado segun lo que esperamos
-     * @param json 
+     * @param json
      */
-    public void responder(JSONObject json){
+    public static void responder(JSONObject json){
+        Cliente cliente = Cliente.getInstance();
+        
         int valor = Integer.parseInt(json.get("parametro").toString());
         JSONObject resul = (JSONObject) json.get("resul");
         
@@ -44,12 +34,15 @@ public class ServidorRespuestas {
             case 1:
                 //LOGIN DE USUARIO
                 String logueo = (String) resul.get("logueo");
+                if (!logueo.equals("ok")) {
+                    System.out.println("Clave y contraseña erronea");
+                    cliente.cerrarConexion();
+                }
+                
+                //Casteo de datos
                 int id = Integer.parseInt(resul.get("id").toString());
                 String nombre = (String) resul.get("nombre");
                 String ingreso = (String) resul.get("ingreso");
-                
-                //Seteo estado de conexión del cliente
-                cliente.setEstado(logueo.equals("ok"));
                 
                 //Seteo información del usuario
                 cliente.getUsuario().setId(id);
@@ -61,45 +54,37 @@ public class ServidorRespuestas {
                 //NOTIFICACIONES
                 for (Object key : resul.keySet()) {
                     int modulo = Integer.parseInt(key.toString());
-                    switch(modulo){
-                        case 1:
-                            Notificacion notificacion = new Notificacion(1, "CORREO INTERNO");
-                            
-                            JSONObject correoInterno = (JSONObject) resul.get("" + modulo);
-                            for (int i = 1; i < correoInterno.size() + 1; i++) {
-                                JSONObject msjs = (JSONObject) correoInterno.get("" + i);
-                                
-                                String origen = msjs.get("nombreD").toString();
-                                String mensaje = msjs.get("mensaje").toString();
-                                
-                                NotificacionMsj msj;
-                                if (origen == null) {
-                                    msj = new NotificacionMsj(mensaje);
-                                }else{
-                                    msj = new NotificacionMsj(mensaje, origen);
-                                }
-                                msj.setVisto(false);
-                                notificacion.addMensaje(msj);
-                            }
-                            {
-                                try {
-                                    cliente.getNotificaciones().addNotificacion(notificacion);
-                                } catch (IOException ex) {
-                                    System.out.println("Error al crear notificación");
-                                    Logger.getLogger(ServidorRespuestas.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
-                            break;
-                    }
-                }
-                {
+                    
+                    Notificacion notificacion;
                     try {
-                        cliente.getNotificaciones().showNotificacion();
-                    } catch (IOException ex) {
-                        System.out.println("Error al mostrar notificaciones");
-                        Logger.getLogger(ServidorRespuestas.class.getName()).log(Level.SEVERE, null, ex);
+                        notificacion = cliente.getNotificacion()
+                                                .stream()
+                                                .filter(n -> n.getTipo() == modulo)
+                                                .findFirst()
+                                                .get();
+                    } catch (NoSuchElementException e) {
+                        notificacion = new Notificacion(modulo, "CORREO INTERNO");
                     }
+                    JSONObject correoInterno = (JSONObject) resul.get("" + modulo);
+                    Iterator iterador = correoInterno.values().iterator();
+                    for (int i = 1; i < correoInterno.size() + 1; i++) {
+                        JSONObject msjs = (JSONObject) iterador.next();
+
+                        String origen = msjs.get("nombreD").toString();
+                        String mensaje = msjs.get("mensaje").toString();
+
+                        NotificacionMsj msj;
+                        if (origen == null) {
+                            msj = new NotificacionMsj(mensaje);
+                        }else{
+                            msj = new NotificacionMsj(mensaje, origen);
+                        }
+                        notificacion.addMensaje(msj);
+                    }
+                    cliente.getNotificacion().add(notificacion);
                 }
+                cliente.showNotificacion();
+                break;
             case 3:
                 // ALGO MAS
                 break;

@@ -5,12 +5,26 @@
  */
 package app;
 
+import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
+import static javafx.application.Application.launch;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import javax.swing.ImageIcon;
+import conexion.Cliente;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import javax.swing.SwingUtilities;
+import notificaciones.NotificacionTray;
 import util.Status;
 
 /**
@@ -18,14 +32,19 @@ import util.Status;
  * @author FLAVIO
  */
 public class App extends Application {
+    private static final Logger LOG = Logger.getLogger(App.class.getName());
+    
+    private Stage stage;
+    public static NotificacionTray tray;
+    public static Cliente cliente = null;
     
     @Override
-    public void start(Stage stage) throws IOException {
-        Parent fxml = FXMLLoader.load(getClass().getResource("/fxml/FXML_app.fxml"));
-        Scene scene = new Scene(fxml);
-        stage.setTitle("Socket cliente - Organización Informática");
-        stage.setScene(scene);
-        stage.show();
+    public void start(Stage stage){
+        this.stage = stage;
+        tray = initializeTrayNotification();
+        
+        cliente = new Cliente();
+        conectarCliente();
     }
 
     /**
@@ -34,7 +53,75 @@ public class App extends Application {
     public static void main(String[] args) {
         Status.nombre = args[0];
         Status.clave = args[1];
+        
         launch(args);
     }
+
+    private NotificacionTray initializeTrayNotification() {
+        tray = new NotificacionTray("APOLO");
+        
+        Image iconoDefecto = new ImageIcon(getClass().getResource("/img/logo.png")).getImage();
+        Image iconoNotificacion = new ImageIcon(getClass().getResource("/img/iconoNotifica.png")).getImage();
+        Image iconoSinConexion = new ImageIcon(getClass().getResource("/img/logo.png")).getImage();
+        tray.setIconoDefecto(iconoDefecto);
+        tray.setIconoNotificacion(iconoNotificacion);
+        tray.setIconoSinConexion(iconoSinConexion);
+        
+        //Menu POPUP
+        PopupMenu menu = new PopupMenu();
+        MenuItem itemCerrar = new MenuItem("Cerrar APOLO");
+        itemCerrar.addActionListener((i) -> {
+            close();
+        });
+        menu.add(itemCerrar);
+        tray.setPopupMenu(menu);
+                
+        //ACTION LISTENER
+        MouseAdapter mouseAdapter = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    Platform.runLater(() -> {
+                        try {
+                            Parent fxml = FXMLLoader.load(getClass().getResource("/fxml/FXML_app.fxml"));
+                            Scene scene = new Scene(fxml);
+                            stage.setTitle("APOLO");
+                            stage.setScene(scene);
+                            stage.show();
+
+                            stage.setOnCloseRequest((WindowEvent event) -> {
+                                stage.hide();
+                            });
+
+                        } catch (IOException ex) {
+                            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+                        }    
+                    });
+                }
+            }
+        };
+        tray.setClickMouseListener(mouseAdapter);
+        
+        return tray;
+    }
     
+    public static void close(){
+        if (cliente.isConectado()) {
+            cliente.cerrarConexion();
+        }
+        tray.close();
+        Platform.exit();
+        System.exit(0);
+    }
+
+    public static void conectarCliente() {
+        if (!cliente.isConectado()) {
+            if (cliente.abrirConexion()) {
+                cliente.login();
+            }else{
+                cliente.cerrarConexion();
+            }
+        }
+    }
 }

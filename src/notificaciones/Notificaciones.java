@@ -13,11 +13,10 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.io.IOException;
+import java.util.List;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -48,12 +47,7 @@ public class Notificaciones {
      * Tiempo que se muestra la notificación en milisegundos
      */
     private final long DURACION = 2000;
-    
-    /**
-     * Lista de notificaciones
-     */
-    private final ObservableList<Notificacion> notificaciones;
-    
+
     /**
      * Carga notificación 
      */
@@ -66,29 +60,9 @@ public class Notificaciones {
         FRAME.setBackground(new java.awt.Color(1.0f,1.0f,1.0f,0.0f));
         
         CONTENEDOR = new JFXPanel();
-        
-        notificaciones = FXCollections.observableArrayList();
     }
     
-    /**
-     * Agrega notificación a la lista
-     * @param notificacion
-     * @throws IOException 
-     */
-    public void addNotificacion(Notificacion notificacion) throws IOException{
-        boolean encontrado = false;
-        for (Notificacion item : notificaciones) {
-            if (item.getTipo() == notificacion.getTipo()) {
-                item.addMensajes(notificacion.getMensajes());
-                encontrado = true;
-            }
-        }
-        if (!encontrado) {
-            notificaciones.add(notificacion);
-        }
-    }
-    
-    public void showNotificacion() throws IOException{
+    public void showNotificacion(List<Notificacion> notificaciones) throws IOException{
         FRAME.setVisible(false);
         
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/FXML_notificacion.fxml"));
@@ -132,6 +106,7 @@ public class Notificaciones {
         FRAME.setAlwaysOnTop(true);
         FRAME.getContentPane().removeAll();
         FRAME.getContentPane().add(CONTENEDOR);
+        FRAME.setFocusableWindowState(false);
         FRAME.setVisible(true);
         
         FadeTransition ft = new FadeTransition();
@@ -143,6 +118,7 @@ public class Notificaciones {
         
         final MediaPlayer SONIDO = new MediaPlayer(new Media(getClass().getResource("/music/Clear.mp3").toString()));
         SONIDO.play();
+        app.App.tray.showIconoNotificacion();
         
         fxml.hoverProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (newValue){

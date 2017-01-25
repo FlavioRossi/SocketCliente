@@ -10,13 +10,15 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import notificaciones.Notificacion;
 import notificaciones.NotificacionMsj;
 
 /**
@@ -25,9 +27,12 @@ import notificaciones.NotificacionMsj;
  * @author FLAVIO
  */
 public class FXML_notificacionController implements Initializable {
+    
+    ObservableList<Notificacion> notificaciones;
+    
     @FXML
     private VBox vbox_mensajes;
-
+    
     /**
      * Initializes the controller class.
      */

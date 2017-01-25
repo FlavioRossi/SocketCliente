@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -53,7 +52,7 @@ public final class Cliente {
      * Cuando el cliente se desconecta se detiene la recepción del servidor
      * Cuando el cliente se conecta se reanuda la recepción del servidor
      */
-    private final BooleanProperty estado;
+    private final SimpleBooleanProperty estado;
     /**
      * Hilo de lectura de respuestas del servidor
      */
@@ -76,7 +75,7 @@ public final class Cliente {
         
         usuario = new Usuario();
         notificaciones = new Notificaciones();
-        servidorRespuestas = new ServidorRespuestas(this);
+        servidorRespuestas = null;//new ServidorRespuestas(this);
         
         //Recibe lo que envia el servidor
         Task tareaLeeCliente = new Task() {
@@ -95,11 +94,30 @@ public final class Cliente {
         estado.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (!newValue) {
                 recibeLeeCliente.interrupt();
+                try {
+                    socket.close();
+                } catch (IOException ex) {
+                    System.out.println("Error al cerrar socket de conexión");
+                }
             }else{
                 recibeLeeCliente.start();
             }
         });
         loginCliente();
+        
+        new Thread(new Task(){
+            @Override
+            protected Object call() throws Exception {
+                while (true){
+                    JSONObject json = new JSONObject();
+                    json.put("parametro", 0);
+                    json.put("resul", "");
+                    output.writeUTF(json.toString());
+                    Thread.sleep(5000);
+                }
+            }
+        }).start();
+        
     }
     
     /**
@@ -117,6 +135,14 @@ public final class Cliente {
     public boolean getEstado() {
         return estado.get();
     }
+    /**
+     * Devuelve etado de conexión del cliente
+     * @return 
+     */
+    public SimpleBooleanProperty getPropertyEstado() {
+        return estado;
+    }
+    
 
     /**
      * Setea conexión del cliente

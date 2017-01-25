@@ -47,6 +47,4 @@ public class Notificacion {
     public void addMensajes(List<NotificacionMsj> msjs){
         mensajes.addAll(msjs);
     }
-    
-    
 }

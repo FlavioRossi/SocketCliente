@@ -6,6 +6,7 @@
 package util;
 
 import java.time.format.DateTimeFormatter;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -42,7 +43,5 @@ public class Status {
      * FORMATO hora del sistema
      */
     public static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm:ss");
-    
-    
     
 }

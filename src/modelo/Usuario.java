@@ -35,7 +35,6 @@ public class Usuario {
     private boolean notificaciones;
     
     public Usuario() {
-        notificaciones = true;
     }
 
     public int getId() {

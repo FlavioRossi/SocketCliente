@@ -17,6 +17,7 @@ public class NotificacionMsj {
     public NotificacionMsj(String msj, String origen) {
         this.msj = msj;
         this.origen = origen;
+        this.visto = false;
     }
 
     public NotificacionMsj(String msj) {
