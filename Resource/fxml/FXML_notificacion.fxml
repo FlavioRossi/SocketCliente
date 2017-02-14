@@ -6,32 +6,29 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
 
-<HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="400.0" styleClass="mainFxmlClass" stylesheets="@../css/fxml_notificacion.css" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controlador.FXML_notificacionController">
+
+<StackPane alignment="TOP_LEFT" styleClass="mainFxmlClass" stylesheets="@../css/fxml_notificacion.css" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controlador.FXML_notificacionController">
    <children>
-      <Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="25.0" />
-      <VBox HBox.hgrow="ALWAYS">
+      <HBox alignment="CENTER" maxHeight="30.0" styleClass="tituloBar" StackPane.alignment="TOP_CENTER">
          <children>
-            <HBox>
-               <children>
-                  <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseClicked="#paginaOI" opacity="0.65" styleClass="paginaOI" text="www.oi.com.ar" wrapText="true" HBox.hgrow="ALWAYS">
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </Label>
-                  <JFXButton fx:id="btn_cerrar" text="x" />
-               </children>
-            </HBox>
-            <VBox fx:id="vbox_mensajes" maxHeight="1.7976931348623157E308" spacing="3.0" VBox.vgrow="ALWAYS" />
+            <Label fx:id="paginaOI" maxWidth="1.7976931348623157E308" onMouseClicked="#paginaOI" opacity="0.65" text="www.oi.com.ar" wrapText="true" HBox.hgrow="ALWAYS">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Label>
+            <JFXButton fx:id="btn_cerrar" text="x" />
          </children>
+         <effect>
+            <DropShadow color="#0000000d" />
+         </effect>
          <padding>
-            <Insets left="5.0" right="5.0" />
+            <Insets bottom="3.0" left="5.0" right="5.0" top="3.0" />
          </padding>
-      </VBox>
+         <StackPane.margin>
+            <Insets bottom="10.0" />
+         </StackPane.margin>
+      </HBox>
    </children>
-   <effect>
-      <DropShadow color="#0000000d" />
-   </effect>
-</HBox>
+</StackPane>

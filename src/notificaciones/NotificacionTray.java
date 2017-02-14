@@ -29,6 +29,7 @@ public class NotificacionTray {
     private final ImageIcon ICON;
     private final ImageIcon ICON_NOTIFICACION;
     private final ImageIcon ICON_SIN_CONEXION;
+    private final ImageIcon ICON_CONECTANDO;
     
     private static final Logger LOG = Logger.getLogger(NotificacionTray.class.getName());
     
@@ -41,6 +42,7 @@ public class NotificacionTray {
         ICON = new ImageIcon(getClass().getResource("/img/logo.png"));
         ICON_NOTIFICACION = new ImageIcon(getClass().getResource("/img/iconoNotifica.png"));
         ICON_SIN_CONEXION = new ImageIcon(getClass().getResource("/img/iconoSinConexion.png"));
+        ICON_CONECTANDO = new ImageIcon(getClass().getResource("/img/iconoConectando.png"));
         
         TRAY_ICON = new TrayIcon(ICON.getImage(), titulo);
         TRAY_ICON.setImageAutoSize(true);
@@ -58,13 +60,7 @@ public class NotificacionTray {
     public void setPopupMenu(PopupMenu popup){
         TRAY_ICON.setPopupMenu(popup);
     }
-    public void setIconoNotificacion(Image imagen){
-        TRAY_ICON.setImage(imagen);
-    }
-    public void setIconoDefecto(Image imagen){
-        TRAY_ICON.setImage(imagen);
-    }
-    public void setIconoSinConexion(Image imagen){
+    public void setIcono(Image imagen){
         TRAY_ICON.setImage(imagen);
     }
     
@@ -76,6 +72,9 @@ public class NotificacionTray {
     }
     public void showIconoSinConexion(){
         TRAY_ICON.setImage(ICON_SIN_CONEXION.getImage());
+    }
+    public void showIconoConectando(){
+        TRAY_ICON.setImage(ICON_CONECTANDO.getImage());
     }
     
     public void showMensaje(String titulo, String mensaje, TrayIcon.MessageType tipo){

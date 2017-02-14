@@ -3,5 +3,22 @@
  */
 
 .mainFxmlClass {
+    -fx-background-color: #303030;
+}
 
+.barra{
+    -fx-background-color: #212121;
+    -fx-max-height: 55;
+    -fx-padding: 0 5 0 5;
+    -fx-margin-bottom: 60;
+}
+
+.barra Label{
+    -fx-font-size: 16;
+    -fx-font-wight: bold;
+    -fx-text-fill: #FFFFFF;
+}
+
+.barra JFXButton{
+    -fx-text-fill: #FFFFFF;
 }

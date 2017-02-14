@@ -14,15 +14,13 @@ import org.json.simple.JSONObject;
  * @author FLAVIO
  */
 class VerificaConexion implements Runnable {
-
-    
     private final int TIEMPO_PULSO = 5000;
     private final ConexionServidor conexion;
     
     private static final Logger LOG = Logger.getLogger(VerificaConexion.class.getName());
     
-    public VerificaConexion(ConexionServidor conexion) {
-        this.conexion = conexion;
+    public VerificaConexion() {
+        this.conexion = ConexionServidor.getInstancia();
     }
 
     @Override
@@ -33,11 +31,12 @@ class VerificaConexion implements Runnable {
         while(conexion.isESTADO_CONEXION()){
             try {
                 Thread.sleep(TIEMPO_PULSO);
-                conexion.setESTADO_CONEXION(conexion.enviar(0, pulso));
+                if (!conexion.enviar(0, pulso)) {
+                    conexion.setESTADO_CONEXION(false);
+                }
             } catch (InterruptedException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
         }
-        conexion.cerrar();
     }
 }

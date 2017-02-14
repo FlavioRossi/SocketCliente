@@ -5,12 +5,10 @@
  */
 package util;
 
-import conexion.Cliente;
+import modelo.Cliente;
 import java.time.LocalDateTime;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import notificaciones.Notificacion;
-import notificaciones.NotificacionMsj;
 import org.json.simple.JSONObject;
 
 /**
@@ -24,7 +22,7 @@ public class ServidorRespuestas {
      * Devuelve: un Object el cual debe ser casteado segun lo que esperamos
      * @param json
      */
-    public static void responder(JSONObject json){
+    public static void responder(JSONObject json) {
         Cliente cliente = Cliente.getInstance();
         
         int valor = Integer.parseInt(json.get("parametro").toString());
@@ -43,7 +41,7 @@ public class ServidorRespuestas {
                 int id = Integer.parseInt(resul.get("id").toString());
                 String nombre = (String) resul.get("nombre");
                 String ingreso = (String) resul.get("ingreso");
-                
+
                 //Seteo información del usuario
                 cliente.getUsuario().setId(id);
                 cliente.getUsuario().setNombre(nombre);
@@ -55,38 +53,19 @@ public class ServidorRespuestas {
                 for (Object key : resul.keySet()) {
                     int modulo = Integer.parseInt(key.toString());
                     
-                    Notificacion notificacion;
-                    try {
-                        notificacion = cliente.getNotificacion()
-                                                .stream()
-                                                .filter(n -> n.getTipo() == modulo)
-                                                .findFirst()
-                                                .get();
-                    } catch (NoSuchElementException e) {
-                        notificacion = new Notificacion(modulo, "CORREO INTERNO");
-                    }
                     JSONObject correoInterno = (JSONObject) resul.get("" + modulo);
                     Iterator iterador = correoInterno.values().iterator();
-                    for (int i = 1; i < correoInterno.size() + 1; i++) {
+                    while (iterador.hasNext()){
                         JSONObject msjs = (JSONObject) iterador.next();
 
                         String origen = msjs.get("nombreD").toString();
                         String mensaje = msjs.get("mensaje").toString();
 
-                        NotificacionMsj msj;
-                        if (origen == null) {
-                            msj = new NotificacionMsj(mensaje);
-                        }else{
-                            msj = new NotificacionMsj(mensaje, origen);
-                        }
-                        notificacion.addMensaje(msj);
+                        Notificacion notifica = new Notificacion(modulo, "CORREO INTERNO", mensaje, origen, false);
+                        cliente.getNotificacion().add(notifica);
                     }
-                    cliente.getNotificacion().add(notificacion);
                 }
                 cliente.showNotificacion();
-                break;
-            case 3:
-                // ALGO MAS
                 break;
         }
     }

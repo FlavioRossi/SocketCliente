@@ -5,10 +5,6 @@
  */
 package notificaciones;
 
-import java.util.List;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 /**
  *
  * @author FLAVIO
@@ -16,18 +12,18 @@ import javafx.collections.ObservableList;
 public class Notificacion {
     private final int tipo;
     private String titulo;
-    private final ObservableList<NotificacionMsj> mensajes;
-    
-    public Notificacion(int tipo, String titulo) {
+    private String msj;
+    private String origen;
+    private boolean visto;
+
+    public Notificacion(int tipo, String titulo, String msj, String origen, boolean visto) {
         this.tipo = tipo;
         this.titulo = titulo;
-        this.mensajes = FXCollections.observableArrayList();
+        this.msj = msj;
+        this.origen = origen;
+        this.visto = visto;
     }
 
-    public int getTipo() {
-        return tipo;
-    }
-    
     public String getTitulo() {
         return titulo;
     }
@@ -36,15 +32,29 @@ public class Notificacion {
         this.titulo = titulo;
     }
 
-    public List<NotificacionMsj> getMensajes() {
-        return mensajes;
+    public String getMsj() {
+        return msj;
     }
 
-    public void addMensaje(NotificacionMsj msj){
-        mensajes.add(msj);
+    public void setMsj(String msj) {
+        this.msj = msj;
     }
+
+    public String getOrigen() {
+        return origen;
+    }
+
+    public void setOrigen(String origen) {
+        this.origen = origen;
+    }
+
+    public boolean isVisto() {
+        return visto;
+    }
+
+    public void setVisto(boolean visto) {
+        this.visto = visto;
+    }
+
     
-    public void addMensajes(List<NotificacionMsj> msjs){
-        mensajes.addAll(msjs);
-    }
 }

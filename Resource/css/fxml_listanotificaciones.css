@@ -1,0 +1,72 @@
+/*
+ * Empty Stylesheet file.
+ */
+
+.mainFxmlClass {
+    
+}
+
+JFXListView{
+    -fx-background-color: #303030;
+}
+
+.list-cell{
+    -fx-background-color: transparent;
+}
+.list-cell:selected{
+    -fx-background-color: white;
+}
+.list-cell:selected Label{
+    -fx-text-fill: black;
+}
+
+ScrollPane {
+   -fx-background: transparent;
+   -fx-background-color: transparent;
+}
+
+/* scroll bar */
+/* The main scrollbar **track** CSS class  */
+JFXListView .scroll-bar:horizontal .track,
+JFXListView .scroll-bar:vertical .track{
+	-fx-background-color:transparent;
+	-fx-border-color:transparent;
+	-fx-background-radius: 0em;
+	-fx-border-radius:2em;
+}
+
+/* The increment and decrement button CSS class of scrollbar */
+JFXListView .scroll-bar:horizontal .increment-button ,
+JFXListView .scroll-bar:horizontal .decrement-button {
+    -fx-background-color:transparent;
+	-fx-background-radius: 0em;
+	-fx-padding:0 0 10 0;
+
+}
+
+/* The increment and decrement button CSS class of scrollbar */
+
+JFXListView .scroll-bar:vertical .increment-button ,
+JFXListView .scroll-bar:vertical .decrement-button {
+
+    -fx-background-color:transparent;
+	-fx-background-radius: 0em;
+	-fx-padding:0 10 0 0;
+
+}
+
+JFXListView  .scroll-bar .increment-arrow,
+JFXListView  .scroll-bar .decrement-arrow
+ {
+	-fx-shape: " ";	
+	-fx-padding:0;
+}
+
+/* The main scrollbar **thumb** CSS class which we drag every time (movable) */
+JFXListView .scroll-bar:horizontal .thumb,
+JFXListView .scroll-bar:vertical .thumb {
+    -fx-background-color:derive(black,90%);
+	-fx-background-insets: 2, 0, 0;
+	-fx-background-radius: 2em;
+
+}

@@ -5,7 +5,6 @@
  */
 package app;
 
-import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -19,8 +18,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javax.swing.ImageIcon;
-import conexion.Cliente;
+import modelo.Cliente;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import javax.swing.SwingUtilities;
@@ -43,7 +41,7 @@ public class App extends Application {
         this.stage = stage;
         tray = initializeTrayNotification();
         
-        cliente = new Cliente();
+        cliente = Cliente.getInstance();
         conectarCliente();
     }
 
@@ -59,14 +57,7 @@ public class App extends Application {
 
     private NotificacionTray initializeTrayNotification() {
         tray = new NotificacionTray("APOLO");
-        
-        Image iconoDefecto = new ImageIcon(getClass().getResource("/img/logo.png")).getImage();
-        Image iconoNotificacion = new ImageIcon(getClass().getResource("/img/iconoNotifica.png")).getImage();
-        Image iconoSinConexion = new ImageIcon(getClass().getResource("/img/logo.png")).getImage();
-        tray.setIconoDefecto(iconoDefecto);
-        tray.setIconoNotificacion(iconoNotificacion);
-        tray.setIconoSinConexion(iconoSinConexion);
-        
+       
         //Menu POPUP
         PopupMenu menu = new PopupMenu();
         MenuItem itemCerrar = new MenuItem("Cerrar APOLO");

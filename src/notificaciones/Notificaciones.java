@@ -6,7 +6,7 @@
 package notificaciones;
 
 import com.jfoenix.controls.JFXButton;
-import controlador.FXML_notificacionController;
+import com.jfoenix.controls.JFXListView;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -15,15 +15,16 @@ import java.awt.Window;
 import java.io.IOException;
 import java.util.List;
 import javafx.animation.FadeTransition;
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -65,32 +66,22 @@ public class Notificaciones {
     public void showNotificacion(List<Notificacion> notificaciones) throws IOException{
         FRAME.setVisible(false);
         
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/FXML_notificacion.fxml"));
-        HBox fxml = (HBox) loader.load();
-                
-        JFXButton btn_cerrar = (JFXButton) fxml.lookup("#btn_cerrar");
-        btn_cerrar.setOnAction(e -> {
-            cerrar(fxml);
-        });
-        
-        FXML_notificacionController controlador = (FXML_notificacionController) loader.getController();
-        
-        Platform.runLater(()->{
-            for (Notificacion notificacion : notificaciones) {
-                boolean muestraTitulo = false;
-                for (NotificacionMsj msj : notificacion.getMensajes()) {
-                    if (!msj.isVisto()) {
-                        if (!muestraTitulo) {
-                            controlador.addTitulo(notificacion.getTitulo());
-                            muestraTitulo = true;
-                        }
-                        controlador.addMsj(msj);
-                    }
-                }
-            }
-        });
+        StackPane fxmlNotificacion = FXMLLoader.load(getClass().getResource("/fxml/FXML_notificacion.fxml"));
 
-        Scene scene = new Scene(fxml);
+        JFXButton btn_cerrar = (JFXButton) fxmlNotificacion.lookup("#btn_cerrar");
+        btn_cerrar.setOnAction(e -> {
+            cerrar(fxmlNotificacion);
+        });
+        
+        JFXListView fxmlListaNotificacion = FXMLLoader.load(getClass().getResource("/fxml/FXML_listaNotificaciones.fxml"));
+        
+        StackPane.setMargin(fxmlListaNotificacion, new Insets(35,0,5,0));
+        fxmlListaNotificacion.setExpanded(true);
+        fxmlListaNotificacion.setDepthProperty(1);
+        
+        fxmlNotificacion.getChildren().add(fxmlListaNotificacion);
+        
+        Scene scene = new Scene(fxmlNotificacion);
         scene.setFill(Color.TRANSPARENT);
         CONTENEDOR.setScene(scene);
         
@@ -110,7 +101,7 @@ public class Notificaciones {
         FRAME.setVisible(true);
         
         FadeTransition ft = new FadeTransition();
-        ft.setNode(fxml);
+        ft.setNode(fxmlNotificacion);
         ft.setFromValue(0);
         ft.setToValue(1);
         ft.setDuration(Duration.seconds(0.5));
@@ -120,12 +111,8 @@ public class Notificaciones {
         SONIDO.play();
         app.App.tray.showIconoNotificacion();
         
-        fxml.hoverProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (newValue){
-                fxml.setStyle("-fx-background-color: rgba(0, 0, 0, 1)");
-            }else{
-                cerrar(fxml);
-            }
+        fxmlNotificacion.hoverProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue)cerrar(fxmlNotificacion);
         });
     }
     

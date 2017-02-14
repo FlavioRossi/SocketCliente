@@ -5,14 +5,21 @@
  */
 package controlador;
 
-import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXPopup;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import modelo.Cliente;
 
 /**
@@ -21,53 +28,74 @@ import modelo.Cliente;
  * @author FLAVIO
  */
 public class FXML_appController implements Initializable {
+    
+    private final Cliente cliente;
+    private final JFXPopup popup;
+    
     @FXML
-    private JFXListView<AdapterNotificacion> jfxListView_notificaciones;
-    
-    private ObservableList<AdapterNotificacion> notificaciones;
-    
-    private Cliente cliente;
+    private StackPane stackPane_container;
+    @FXML
+    private JFXButton jfxButton_menu;
 
-    /**
-     * Initializes the controller class.
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        notificaciones = FXCollections.observableArrayList();
-        jfxListView_notificaciones.setItems(notificaciones);
-        
-    }    
-
-    public void setCliente(Cliente cliente){
-        this.cliente = cliente;
+    public FXML_appController() {
+        this.cliente = Cliente.getInstance();
+        this.popup = new JFXPopup();
     }
     
     /**
-     * Clase adaptador jfxListView_notificaciones
+     * Initializes the controller class.
+     * @param url
+     * @param rb
      */
-    private static class AdapterNotificacion {
-        private SimpleStringProperty titulo;
-        private SimpleStringProperty mensaje;
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        Parent node;
+        try {
+            node = FXMLLoader.load(getClass().getResource("/fxml/FXML_listaNotificaciones.fxml"));
+            StackPane.setMargin(node, new Insets(63,0,0,0));
+        } catch (IOException ex) {
+            Logger.getLogger(FXML_appController.class.getName()).log(Level.SEVERE, null, ex);
+            node = null;
+        }
+        stackPane_container.getChildren().add(node);
         
-        public AdapterNotificacion() {
-            titulo = new SimpleStringProperty();
-            mensaje = new SimpleStringProperty();
-        }
+        inicializaMenuPopup();
+    } 
 
-        public SimpleStringProperty getTitulo() {
-            return titulo;
+    @FXML
+    private void reconectar(ActionEvent event) {
+        if (!cliente.isConectado()) {
+            if (cliente.abrirConexion()) {
+                System.out.println("Cliente conectado");
+            }else{
+                System.out.println("Cliente no conectado");
+            }
         }
+    }
 
-        public void setTitulo(SimpleStringProperty titulo) {
-            this.titulo = titulo;
-        }
+    private void inicializaMenuPopup() {
+        JFXButton btn_opciones = new JFXButton("Opciones");
+        btn_opciones.setOnAction((e) -> {
+            popup.close();
+            System.out.println("muestra vista opciones");
+        });
+        btn_opciones.setStyle("-fx-text-fill: #FFFFFF;");
+        
+        JFXButton btn_cerrarSesion = new JFXButton("Cerrar Sesión");
+        btn_cerrarSesion.setOnAction((e) -> {
+            popup.close();
+            System.out.println("devuelve " + cliente.cerrarConexion());
+        });
+        btn_cerrarSesion.setStyle("-fx-text-fill: #FFFFFF;");
+        
+        VBox container = new VBox(btn_opciones, btn_cerrarSesion);
+        container.setStyle("-fx-background-color: #424242");
+        popup.setContent(container);
+        popup.setSource(jfxButton_menu);
+    }
 
-        public SimpleStringProperty getMensaje() {
-            return mensaje;
-        }
-
-        public void setMensaje(SimpleStringProperty mensaje) {
-            this.mensaje = mensaje;
-        }
+    @FXML
+    private void opciones(ActionEvent event) {
+        popup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT);
     }
 }

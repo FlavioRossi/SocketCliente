@@ -3,45 +3,21 @@
  */
 
 .mainFxmlClass {
-    -fx-background-color: rgba(0, 0, 0, 0.8);
-}
-.title{
-    -fx-font-size: 16;
-    -fx-font-weight: bold;
-}
-.remitente{
-    -fx-font-weight: bold;
-    -fx-max-height: 60;
-    -fx-max-width: 100;
-    -fx-min-width: 100;
-    -fx-text-overrun: ellipsis;
-    -fx-wrap-text: true;
+    -fx-background-color: #303030;
 }
 
-JFXButton{
+.tituloBar{
+    -fx-background-color: #212121;
+}
+
+#btn_cerrar{
     -fx-text-fill: #FFC107;
 }
-Label{
-    -fx-text-fill: #ffffff;
-}
 
-.responde{
-    -fx-max-height: 60;
-    -fx-max-width: Infinity;
-    -fx-text-overrun: ellipsis;
-    -fx-wrap-text: true;
+#paginaOI{
+    -fx-text-fill: #FFFFFF;
 }
-
-.paginaOI:hover{
+#paginaOI:hover{
     -fx-text-fill: #FFC107;
-    -fx-cursor: hand;
-}
-
-Pane{
-    -fx-background-color: #FFC107;
-}
-
-.contenedor:hover{
-    -fx-background-color: rgba(255, 255, 255, 0.1);
     -fx-cursor: hand;
 }

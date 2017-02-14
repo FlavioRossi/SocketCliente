@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXListView?>
+
+
+<JFXListView fx:id="jfxListView_notificaciones" styleClass="mainFxmlClass" stylesheets="@../css/fxml_listanotificaciones.css" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controlador.FXML_listaNotificacionesController" />

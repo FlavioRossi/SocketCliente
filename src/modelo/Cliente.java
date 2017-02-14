@@ -5,198 +5,81 @@
  */
 package modelo;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import conexion.ConexionServidor;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Task;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import notificaciones.Notificacion;
 import notificaciones.Notificaciones;
-import util.ServidorRespuestas;
+import org.json.simple.JSONObject;
 import util.Status;
 
 /**
  *
  * @author FLAVIO
  */
-public final class Cliente {
-    /**
-     * Socket de conexión con el servidor
-     */
-    private final Socket socket;
-    /**
-     * Lectura del servidor
-     */
-    private final DataInputStream input;
-    /**
-     * Escritura del servidor
-     */
-    private final DataOutputStream output;
-    /**
-     * Notificaciones del cliente
-     */
-    private final Notificaciones notificaciones;
-    /**
-     * Parametros de respuestas del servidor
-     */
-    private final ServidorRespuestas servidorRespuestas;
-    
-    /**
-     * Estado de conexión del cliente (conectado/desconectado)
-     * Cuando el cliente se desconecta se detiene la recepción del servidor
-     * Cuando el cliente se conecta se reanuda la recepción del servidor
-     */
-    private final SimpleBooleanProperty estado;
-    /**
-     * Hilo de lectura de respuestas del servidor
-     */
-    private Thread recibeLeeCliente;
-    /**
-     * Información del usuario recibida por el servidor
-     */
-    private final Usuario usuario;
-    
-    /**
-     * LOG de la clase 
-     */
+public class Cliente {
     private static final Logger LOG = Logger.getLogger(Cliente.class.getName());
     
-    public Cliente() throws IOException {
-        //Conecto el socket con el servidor
-        socket = new Socket(Status.IP_SERVER, Status.PUERTO_SOCKET);
-        input = new DataInputStream(socket.getInputStream());
-        output = new DataOutputStream(socket.getOutputStream());
-        
-        usuario = new Usuario();
-        notificaciones = new Notificaciones();
-        servidorRespuestas = null;//new ServidorRespuestas(this);
-        
-        //Recibe lo que envia el servidor
-        Task tareaLeeCliente = new Task() {
-            @Override
-            protected Object call() throws Exception {
-                while(true){
-                    String mensaje = input.readUTF();
-                    JSONObject respond = (JSONObject) new JSONParser().parse(mensaje);
-                    servidorRespuestas.responder(respond);
-                }
-            }
-        };
-        recibeLeeCliente = new Thread(tareaLeeCliente);
-        
-        estado = new SimpleBooleanProperty();
-        estado.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (!newValue) {
-                recibeLeeCliente.interrupt();
-                try {
-                    socket.close();
-                } catch (IOException ex) {
-                    System.out.println("Error al cerrar socket de conexión");
-                }
-            }else{
-                recibeLeeCliente.start();
-            }
-        });
-        loginCliente();
-        
-        new Thread(new Task(){
-            @Override
-            protected Object call() throws Exception {
-                while (true){
-                    JSONObject json = new JSONObject();
-                    json.put("parametro", 0);
-                    json.put("resul", "");
-                    output.writeUTF(json.toString());
-                    Thread.sleep(5000);
-                }
-            }
-        }).start();
-        
+    private static Cliente instanciaCliente = null;
+    
+    private final ConexionServidor conexion;
+    private final Usuario usuario;
+    private final ObservableList<Notificacion> notificacion;
+    
+    private Cliente() {
+        this.conexion = ConexionServidor.getInstancia();
+        this.usuario = new Usuario();
+        notificacion = FXCollections.observableArrayList();
+    }
+
+    public static Cliente getInstance(){
+        if (instanciaCliente == null) {
+            instanciaCliente = new Cliente();
+        }
+        return instanciaCliente;
     }
     
-    /**
-     * Devuelve instancia de usuario
-     * @return 
-     */
     public Usuario getUsuario() {
         return usuario;
     }
 
-    /**
-     * Devuelve etado de conexión del cliente
-     * @return 
-     */
-    public boolean getEstado() {
-        return estado.get();
+    public ObservableList<Notificacion> getNotificacion() {
+        return notificacion;
     }
-    /**
-     * Devuelve etado de conexión del cliente
-     * @return 
-     */
-    public SimpleBooleanProperty getPropertyEstado() {
-        return estado;
-    }
-    
 
-    /**
-     * Setea conexión del cliente
-     * @param estado 
-     */
-    public void setEstado(boolean estado) {
-        this.estado.set(estado);
+    public void showNotificacion(){
+        Notificaciones show = new Notificaciones();
+        try {
+            show.showNotificacion(notificacion.stream().collect(Collectors.toList()));
+        } catch (IOException ex) {
+            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
-    /**
-     * Verifico usuario y contraseña en el servidor 
-     */
-    public void loginCliente(){
+    public boolean abrirConexion(){
+        return conexion.conectar();
+    }
+    
+    public boolean cerrarConexion(){
+        JSONObject json = new JSONObject();
+        json.put("estado", "baja");
+        return conexion.enviar(9999, json);
+    }
+    
+    public boolean isConectado(){
+        return conexion.isESTADO_CONEXION();
+    }
+    
+    public void login(){
         JSONObject json = new JSONObject();
         json.put("usuario", Status.nombre);
         json.put("clave", Status.clave);
-
-        servidorRespuestas.responder(enviar(1, json));
-    }
-    
-    /**
-     * Devuelvo lista de notificaciones
-     * @return 
-     */
-    public Notificaciones getNotificaciones() {
-        return notificaciones;
-    }
-    
-    /**
-     * Envio petición al servidor
-     * @param parametro ->Tipo de operación que va a realizar el servidor
-     * @param resul ->Parametros para la resolución
-     * @return ->Retorna la respuesta del servidor
-     *         ->Formato de respuesta Json: "parametro", "resul"
-     */
-    public JSONObject enviar(int parametro, JSONObject resul){
-        JSONObject json = new JSONObject();
-        json.put("parametro", parametro);
-        json.put("resul", resul);
         
-        JSONObject respond = new JSONObject();
-        try {
-            //Envia al servidor
-            output.writeUTF(json.toString());
-            //Respuesta del servidor
-            String mensaje = input.readUTF();
-            respond = (JSONObject) new JSONParser().parse(mensaje);
-        } catch (IOException ex) {
-            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
-            LOG.log(Level.SEVERE, "Error al enviar al servidor");
-        } catch (ParseException ex) {
-            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
-            LOG.log(Level.SEVERE, "Error al parsear respuesta del servidor");
-        }
-        return respond;
+        conexion.enviar(1, json);
     }
+
 }
